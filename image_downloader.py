@@ -11,10 +11,10 @@ def path_pick(path, extension):
     c = 1
     download_dir, name = '/'.join(path.split('/')[:-1]), path.split('/')[-1]
 
-    while f'{name}-{c}.{extension}' in listdir(download_dir):
+    while f'{name}-{c}' in [i.split('.')[0] for i in listdir(download_dir)]:
         c += 1
 
-    return join(download_dir, f'{name}-{c}.jpg')
+    return join(download_dir, f'{name}-{c}.{extension}')
 
 
 def dwn_img(url, path):
