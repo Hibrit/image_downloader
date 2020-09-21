@@ -10,16 +10,20 @@ URL = 'https://wallpapercave.com'
 
 
 class Downloader():
-    def __init__(self, url, term, name):
+    def __init__(self, url, term):
         self.URL = url
         self.TERM = term
-        self.NAMING_TERM = name
         self.PATH = dirname(abspath(__file__))
         self.session = HTMLSession()
 
     def create_dwn_if_not_exists(self):
-        if not exists(join(self.PATH, 'downloaded')):
-            mkdir('downloaded')
+        if not exists(join(self.PATH, 'downloads')):
+            mkdir('downloads')
+        else:
+            print('[+] Folder already exists.')
+
+        if not exists(join(self.PATH, 'downloads', self.TERM[1:])):
+            mkdir(join('downloads', self.TERM[1:]))
         else:
             print('[+] Folder already exists.')
 
@@ -32,36 +36,37 @@ class Downloader():
 
         for tag in image_tags:
             dwn_img(f'{self.URL}{tag.attrs["src"]}', join(
-                self.PATH, 'downloaded', self.NAMING_TERM))
+                self.PATH, 'downloads', self.TERM))
             # TODO : write dwn_img() func
             #! be carefull if img exists don't download
             #! try to multi thread this
 
 
-def foo(term, name):
-    d = Downloader(URL, term, name)
+def foo(term):
+    d = Downloader(URL, term)
     d.run()
 
 
-t1 = Thread(target=foo, args=(
-    '/binding-of-isaac-desktop-wallpapers', 'binding-of-isaac-1'))
-t2 = Thread(target=foo, args=(
-    '/the-binding-of-isaac-wallpapers', 'binding-of-isaac-2'))
-t3 = Thread(target=foo, args=('/dark-wallpapers', 'dark'))
-t4 = Thread(target=foo, args=('/dark-anime-desktop-wallpapers', 'dark-anime'))
-t5 = Thread(target=foo, args=('/dark-gaming-wallpapers', 'dark-gaming'))
-t6 = Thread(target=foo, args=('/wallpaper-arch-linux', 'arch-1'))
-t7 = Thread(target=foo, args=('/arch-linux-wallpaper', 'arch-2'))
-t8 = Thread(target=foo, args=('/ciri-wallpapers', 'ciri'))
-t9 = Thread(target=foo, args=(
-    '/the-witcher-3-wild-hunt-hd-wallpapers', 'witcher-1'))
-t10 = Thread(target=foo, args=('/the-witcher-4k-hd-wallpapers', 'witcher-2'))
-t11 = Thread(target=foo, args=('/yennefer-wallpapers', 'yennefer'))
-t12 = Thread(target=foo, args=(
-    '/the-witcher-triss-merigold-desktop-wallpapers', 'triss'))
+to_dwn_list = [
+    '/binding-of-isaac-desktop-wallpapers',
+    '/the-binding-of-isaac-wallpapers',
+    '/dark-wallpapers',
+    '/dark-anime-desktop-wallpapers',
+    '/dark-gaming-wallpapers',
+    '/wallpaper-arch-linux',
+    '/arch-linux-wallpaper',
+    '/ciri-wallpapers',
+    '/the-witcher-3-wild-hunt-hd-wallpapers',
+    '/the-witcher-4k-hd-wallpapers',
+    '/yennefer-wallpapers',
+    '/the-witcher-triss-merigold-desktop-wallpapers'
+]
 
+ts = []
 
-ts = [t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12]
+for i in to_dwn_list:
+    t = Thread(target=foo, args=(i,))
+    ts.append(t)
 
 for t in ts:
     t.deamon = True

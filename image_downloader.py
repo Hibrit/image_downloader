@@ -3,18 +3,16 @@ from os.path import join
 
 from requests import get
 
-download_dir = ''
-
 
 def path_pick(path, extension):
-    global download_dir
     c = 1
-    download_dir, name = '/'.join(path.split('/')[:-1]), path.split('/')[-1]
-
-    while f'{name}-{c}' in [i.split('.')[0] for i in listdir(download_dir)]:
+    print(path)
+    download_dir = join('downloads', path[1:])
+    print(download_dir)
+    while f'{c}' in [i.split('.')[0] for i in listdir(download_dir)]:
         c += 1
 
-    return join(download_dir, f'{name}-{c}.{extension}')
+    return join(download_dir, f'{c}.{extension}')
 
 
 def dwn_img(url, path):
