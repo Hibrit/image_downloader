@@ -15,6 +15,7 @@ class Downloader():
         self.TERM = term
         self.PATH = dirname(abspath(__file__))
         self.session = HTMLSession()
+        self.threads = []
 
     def create_dwn_if_not_exists(self):
         if not exists(join(self.PATH, 'downloads')):
@@ -33,13 +34,23 @@ class Downloader():
         response = self.session.get(f'{self.URL}{self.TERM}')
 
         image_tags = response.html.find('.wpimg', first=False)
-
+        current_name = 1
         for tag in image_tags:
-            dwn_img(f'{self.URL}{tag.attrs["src"]}', join(
-                self.PATH, 'downloads', self.TERM))
+            t = Thread(target=dwn_img, args=(
+                f'{self.URL}{tag.attrs["src"]}', join(self.PATH, 'downloads', self.TERM), current_name))
+            self.threads.append(t)
+            current_name += 1
             # TODO : write dwn_img() func
-            #! be carefull if img exists don't download
-            #! try to multi thread this
+            # ! be carefull if img exists don't download
+            # ! try to multi thread this
+
+        for t in self.threads:
+            t.deamon = True
+            t.start()
+
+        for t in self.threads:
+            t.join()
+        print(f'[+] Finished downloading {self.TERM}')
 
 
 def foo(term):
@@ -59,7 +70,14 @@ to_dwn_list = [
     '/the-witcher-3-wild-hunt-hd-wallpapers',
     '/the-witcher-4k-hd-wallpapers',
     '/yennefer-wallpapers',
-    '/the-witcher-triss-merigold-desktop-wallpapers'
+    '/the-witcher-triss-merigold-desktop-wallpapers',
+    '/ciri-wallpapers',
+    '/ciri-desktop-wallpapers',
+    '/ciri-and-geralt-wallpapers',
+    '/geralt-and-ciri-the-witcher-4k-wallpapers',
+    '/dark-red-wallpaper-hd',
+    '/wallpaper-dark-red'
+
 ]
 
 ts = []
